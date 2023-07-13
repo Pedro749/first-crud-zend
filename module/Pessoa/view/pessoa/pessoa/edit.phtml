@@ -1,0 +1,173 @@
+<?php
+
+$title = "Edit Pessoa";
+$this->headTitle($title);
+
+?>
+<div>
+<h1><?=$this->escapeHtml($title)?></h1>
+
+<?php
+
+$form->setAttribute(
+  'action', 
+  $this->url('pessoa', [
+    'action' => 'edit',
+    'id' => $id,
+  ])
+);
+
+$form->prepare();
+
+echo $this->form()->openTag($form);
+
+$id = $this->form->get('id');
+$name = $this->form->get('name');
+$email = $this->form->get('email');
+$status = $this->form->get('status');
+$submit = $this->form->get('submit');
+
+$name->setAttributes([
+  'class' => 'form-control',
+  'autofocus' => 'autofocus',
+  'data-valid' => 'text',
+]);
+
+$email->setAttributes([
+  'class' => 'form-control',
+  'data-valid' => 'email',
+]);
+
+$submit->setAttributes([
+  'class' => 'btn btn-primary px-3',
+]);
+
+$status->setAttributes([
+  'class' => 'form-control cursor-pointer',
+  'style' => 'cursor: pointer;',
+]);
+
+?>
+
+<?= $this->formElement($id) ?>
+<div class="form-group">
+  <div class="col-md-8">
+    <?= $this->formLabel($name) ?>
+    <?= $this->formElement($name) ?>
+    <div data-help="true" class="text-danger"></div>
+  </div>
+</div>
+<div class="form-group">
+  <div class="col-md-8">
+    <?= $this->formLabel($email) ?>
+    <?= $this->formElement($email) ?>
+    <div data-help="true" class="text-danger"></div>
+    </div>
+</div>
+<div class="form-group">
+  <div class="col-md-8">
+    <?= $this->formLabel($status) ?>
+    <?= $this->formElement($status) ?>
+  </div>
+</div>
+<div class="col-md-8 d-flex justify-content-end">
+  <a 
+    href="<?=$this->url('pessoa', ['action' => 'index'])?>" 
+    class="btn btn-warning mr-1 px-3" 
+  >
+    Voltar
+  </a>
+  <?= $this->formElement($submit) ?>
+</div>
+
+<?= $this->form()->closeTag()?>
+
+</div>
+<script>
+
+let form = document.getElementById("pessoa");
+
+if (form && form instanceof HTMLFormElement) {
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    cleanHelpers();
+
+    const inputsValided = validFields();
+
+    if (!inputsValided.hasInvalid) {
+      let formData = new FormData(form);
+      fetch('/pessoa/edit', {
+        method: 'POST',
+        body: formData
+      }).then(
+        () => window.location = "<?=$this->url('pessoa', ['action' => 'index']) ?>");
+    } else {
+      inputsValided.inputs[0].focus();
+      inputsValided.inputs[0].nextElementSibling.innerText = 'Invalid Input!';
+    }
+  });
+}
+
+
+function validFields() {
+  let inputs = Array.from(document.querySelectorAll('[data-valid]'));
+
+  const invalidInputs = [];
+
+  inputs.forEach((input) => {
+    if (input && input instanceof HTMLInputElement) {
+      const validType = input.getAttribute('data-valid');
+      
+      if (validType) {
+        switch (validType.toLocaleLowerCase()) {
+          case 'text': 
+            if (!isValidText(input.value)) {
+              invalidInputs.push(input);
+            }
+            break;
+          case 'email':
+            if (!isValidEmail(input.value)) {
+              invalidInputs.push(input);
+            }
+            break;
+        }
+      }
+    }
+  });
+
+  return {
+    hasInvalid: invalidInputs.length > 0,
+    inputs: invalidInputs
+  };
+}
+
+function isValidText(text) {
+  if (!text || text.length === 0) return false
+  if (text && text.length > 255) return false;
+
+  return true;
+
+}
+
+function isValidEmail(email) {
+  if (!email) return false;
+
+  const EMAIL_VALID_REGEX = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+  if (email.match(EMAIL_VALID_REGEX)) return true;
+
+  return false;
+}
+
+function cleanHelpers() {
+  let helpers = Array.from(document.querySelectorAll('[data-help]'));
+
+  helpers.forEach((helper) => {
+    if (helper && helper instanceof HTMLDivElement) {
+      helper.innerText = '';
+    }
+  });
+}
+
+</script>

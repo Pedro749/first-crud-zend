@@ -1,0 +1,65 @@
+<?php
+
+$title = 'Pessoas';
+$this->headTitle($title);
+?>
+
+<h1 class="display-3"><?= $this->escapeHtml($title) ?></h1>
+
+<p>
+  <a 
+    class="btn btn-success float-right mb-2" 
+    href="<?= $this->url('pessoa', ['action' => 'add']) ?>"
+  >
+    Add Pessoa
+  </a>
+</p>
+
+<table class="table table-striped">
+  <thead class="thead-dark">
+    <th scope="col">Name</th>
+    <th scope="col">E-mail</th>
+    <th scope="col">Status</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </thead>
+  <tbody>
+
+<?php 
+  foreach($pessoas as $pessoa) :
+?>
+  <tr>
+    <td><?= $this->escapeHtml($pessoa->name) ?></td>
+    <td><?= $this->escapeHtml($pessoa->email) ?></td>
+    <td><?= $this->escapeHtml($pessoa->status) ?></td>
+    <td>
+        <a 
+          class="nav-link" 
+          href="<?= $this->url(
+            'pessoa', 
+            ['action' => 'edit', 'id' => $pessoa->id]
+          ) 
+        ?>"
+      >
+        Edit 
+      </a>
+    </td>
+    <td>
+        <a 
+          class="nav-link" 
+          href="<?= $this->url(
+            'pessoa', 
+            ['action' => 'delete', 'id' => $pessoa->id]
+          ) 
+        ?>"
+      >
+        Delete 
+      </a>
+    </td>
+  </tr>
+<?php 
+  endforeach;
+?>
+
+  </tbody>
+</table>
